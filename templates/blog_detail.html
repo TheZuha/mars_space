@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="card-title">{{ post.author.username }}'s Post</h1>
+            <img src="{{ post.image.url }}" class="img-fluid rounded" alt="Post image">
+            <p class="card-text mt-3">{{ post.description }}</p>
+            <p class="text-muted">Likes: <span id="like-count-{{ post.id }}">{{ post.likes.count }}</span></p>
+            <button id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})" class="btn {% if is_liked %}btn-danger{% else %}btn-primary{% endif %}">
+                {% if is_liked %}Unlike{% else %}Like{% endif %}
+            </button>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h2>Comments:</h2>
+        <div class="list-group" id="comment-section-{{ post.id }}">
+            {% for comment in comments %}
+            <div class="list-group-item">
+                <p><strong>{{ comment.user.username }}:</strong> {{ comment.content }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <form action="javascript:addComment({{ post.id }})" method="POST" id="comment-form-{{ post.id }}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <textarea id="comment-input-{{ post.id }}" class="form-control" rows="2" placeholder="Write a comment..."></textarea>
+            <button type="submit" class="btn btn-success mt-2">Add Comment</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function likePost(postId) {
+        fetch(`/like/${postId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            const likeButton = document.getElementById(`like-button-${postId}`);
+            const likeCount = document.getElementById(`like-count-${postId}`);
+            if (data.is_liked) {
+                likeButton.classList.remove('btn-primary');
+                likeButton.classList.add('btn-danger');
+                likeButton.innerText = 'Unlike';
+            } else {
+                likeButton.classList.remove('btn-danger');
+                likeButton.classList.add('btn-primary');
+                likeButton.innerText = 'Like';
+            }
+            likeCount.innerText = data.likes_count;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function addComment(postId) {
+        const commentText = document.getElementById(`comment-input-${postId}`).value;
+        if (commentText.trim() === "") return;
+        fetch(`/add_comment/${postId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({'content': commentText})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const commentSection = document.getElementById(`comment-section-${postId}`);
+                const newComment = `
+                    <div class="list-group-item">
+                        <strong>${data.username}:</strong> ${data.comment}
+                    </div>
+                `;
+                commentSection.innerHTML += newComment;
+                document.getElementById(`comment-input-${postId}`).value = "";
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+{% endblock %}

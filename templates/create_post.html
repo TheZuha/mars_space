@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center mt-5" style="min-height: 80vh;">
+    <div class="card p-4 shadow-lg"
+         style="background-color: #f9f9f9; border-radius: 10px; max-width: 600px; width: 100%;">
+        <h2 class="text-center mb-4">Создать новый пост</h2>
+        <form method="POST" enctype="multipart/form-data" id="postForm">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="title" class="form-label">Заголовок</label>
+                {{ form.title|add_class:"form-control" }}
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Загрузить изображение</label>
+                {{ form.image|add_class:"form-control" }}
+            </div>
+            <div class="text-center">
+                <button type="submit" id="submitBtn" class="btn btn-secondary" disabled>Создать пост</button>
+                <a href="/" class="btn btn-secondary">Отменить</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const titleInput = document.querySelector('#id_title');
+    const submitBtn = document.querySelector('#submitBtn');
+
+    function checkInputs() {
+        if (titleInput.value.trim() !== '') {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('btn-secondary');
+            submitBtn.classList.add('btn-danger');
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.classList.remove('btn-danger');
+            submitBtn.classList.add('btn-secondary');
+        }
+    }
+
+    titleInput.addEventListener('input', checkInputs);
+</script>
+
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .header {
+        gap: 20px;
+    }
+
+    .h2_l {
+        color: rgb(20, 44, 66);
+        width: 250px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .h2_r {
+        color: #EB4034;
+        font-size: 1.55rem;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .product-container {
+        gap: 20px;
+        width: 100%;
+    }
+
+    .product-card {
+        width: 290px;
+        transition: transform 0.2s;
+        border: none;
+        border-radius: 10px;
+    }
+
+    .product-card:hover {
+        transform: scale(1.05);
+    }
+
+    .product-image {
+        width: 150px;
+        margin-top: 20px;
+    }
+
+    /* Disabled card styles for out-of-stock products */
+    .product-card.disabled,
+    .product-card.disabled .product-name,
+    .product-card.disabled .product-price,
+    .product-card.disabled .product-count {
+        color: gray !important;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .product-card.disabled .product-image {
+        filter: grayscale(100%);
+    }
+</style>
+
+<main class="container">
+    <div class="d-flex justify-content-between align-items-center py-4 header">
+        <h2 class="font-weight-bold d-flex align-items-center h2_l gap-2">
+            <img src="{% static 'images/shop_logo.png' %}" alt="" width="30" height="30"> Магазин
+        </h2>
+        <a href="{% url 'shophistory' %}" class="text-decoration-none h2_r d-flex align-items-center gap-2">
+            <img src="{% static 'images/clock_logo.svg' %}" alt="" width="30" height="30"> История покупок
+        </a>
+    </div>
+
+    <div class="product-container d-flex flex-wrap justify-content-start pt-4 gap-4 mb-4">
+        {% for p in products %}
+        <div class="card product-card text-center shadow-sm {% if p.count == 0 %}disabled{% endif %}">
+            <a href="#" class="text-decoration-none product-link" data-bs-toggle="modal"
+               data-bs-target="#productModal{{ p.id }}">
+                <img src="{{ p.image.url }}" alt="{{ p.name }}" class="card-img-top product-image mx-auto">
+                <div class="card-body">
+                    <h5 class="card-title product-name text-black fs-6 fw-semibold">{{ p.name }}</h5>
+                    <img src="{% static 'images/coin.svg' %}" alt="" width="20px" height="20px" class="d-inline mb-1">
+                    <p class="price-text text-danger d-inline fs-5 fw-semibold">{{ p.price }}</p>
+                    <span class="text-muted d-inline fw-semibold">Coins</span>
+                    <p class="text-muted product-count mt-4 fw-light" style="font-size: smaller;">{{ p.count }}
+                        остаток</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Product Modal -->
+        <div class="modal fade" id="productModal{{ p.id }}" tabindex="-1" aria-labelledby="productModalLabel{{ p.id }}"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center fw-bold" id="productModalLabel{{ p.id }}">Вы подтверждаете
+                            покупку?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p style="color: rgb(20, 44, 66);" class="fw-medium fs-5">Название товара: {{ p.name }}</p>
+                        <p class="text-muted">{{ p.description }}</p>
+                        <p>Цена: {{ p.price }} <img src="{% static 'images/coin.svg' %}" alt="" width="20px"
+                                                    height="20px" class="d-inline mb-1"></p>
+                    </div>
+                    <div class="modal-footer d-flex flex-column">
+                        {% if p.count > 0 %}
+                        {% if user_coins >= p.price %}
+                        <a href="{% url 'buy_product' p.id %}" class="btn btn-danger w-75 fw-bold rounded rounded-4"
+                           style="background: linear-gradient(286.17deg, #e33d0e, #ff7d58); color: white;width: 300px; height: 55px; display: flex; justify-content: center; align-items: center;">Купить</a>
+                        {% else %}
+                        <!-- Yetarli tangalar yo'qligini ko'rsatuvchi tugma -->
+                        <a href="#" type="button" class="btn btn-danger w-75 fw-bold rounded rounded-4"
+                           data-bs-toggle="modal"
+                           data-bs-target="#insufficientCoinsModal{{ p.id }}"
+                           style="background: linear-gradient(286.17deg, #e33d0e, #ff7d58); color: white;width: 300px; height: 55px; display: flex; justify-content: center; align-items: center;">
+                            Купить
+                        </a>
+                        {% endif %}
+                        {% else %}
+                        <button type="button" class="btn btn-secondary" disabled>Нет в наличии</button>
+                        {% endif %}
+                        <button type="button" class="btn btn-secondary w-75 fw-bold rounded rounded-4"
+                                data-bs-dismiss="modal"
+                                style="border: 1px solid #ef400f;background: #fff;color: #ef400f;width: 300px; height: 55px;">
+                            Закрыть
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insufficient Coins Modal -->
+        <div class="modal fade" id="insufficientCoinsModal{{ p.id }}" tabindex="-1"
+             aria-labelledby="insufficientCoinsLabel{{ p.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="margin-left: 160px;">
+                            <div class="position-relative my-4"
+                                 style="border-radius: 80px; background: linear-gradient(286.17deg, #e33d0e, #ff7d58); width: 130px; height: 130px;">
+                                <i class="fa-regular fa-face-frown position-absolute text-white fs-1"
+                                   style="left: 45px; top: 45px; margin-right: 100px;"></i>
+                            </div>
+                        </div>
+                        <p class="fw-bold fs-4 text-center">У вас недостаточно Coins</p>
+                        <p class="text-center w-75 fw-light ms-5">На данный момент у вас не хаватает баланса для
+                            покупки. Продолжайте учиться и в скором времени вернитесь к покупке</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary rounded rounded-4 fw-semibold"
+                                data-bs-dismiss="modal"
+                                style="background: linear-gradient(286.17deg, #e33d0e, #ff7d58); color: white; width: 300px; height: 55px;margin-right: 95px">
+                            Понял
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+    </div>
+</main>
+
+{% endblock %}
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4 text-center">
+
+    <!-- Mahsulot rasmi va "Sotib olish" tugmasi -->
+    <div class="card mx-auto" style="max-width: 400px;">
+        <div class="card-body">
+            <h3 class="card-title">{{ product.name }}</h3>
+            <img src="{{ product.image.url }}" alt="Mahsulot rasmi" class="img-fluid my-3" style="max-width: 250px;">
+
+            <!-- Modalni ochuvchi tugmalar -->
+            {% if can_buy %}
+                <!-- Sotib olish tasdiqlash modali -->
+                <button type="button" class="btn btn-danger rounded-4 fw-bolder" data-bs-toggle="modal" data-bs-target="#confirmPurchaseModal">
+                    Да, купить
+                </button>
+            {% else %}
+                <!-- Ogohlantirish modali -->
+                <button type="button" class="btn btn-danger rounded-4 fw-bolder" data-bs-toggle="modal" data-bs-target="#insufficientCoinsModal">
+                    Недостаточно Coins
+                </button>
+            {% endif %}
+            <a href="{% url 'shop' %}" class="btn btn-outline-white text-danger rounded-4 fw-bolder border border-3 border-secondary mt-3">Отменить</a>
+        </div>
+    </div>
+
+    <!-- Sotib olishni tasdiqlash modali -->
+    <div class="modal fade" id="confirmPurchaseModal" tabindex="-1" aria-labelledby="confirmPurchaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmPurchaseModalLabel">Подтверждение покупки</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите купить {{ product.name }} за {{ product.price }} Coins?
+                </div>
+                <div class="modal-footer">
+                    <a href="{% url 'buy_product' product.id %}" class="btn btn-danger">Да, купить</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tangalari yetarli emas ogohlantirish modali -->
+    <div class="modal fade" id="insufficientCoinsModal" tabindex="-1" aria-labelledby="insufficientCoinsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="insufficientCoinsModalLabel">У вас недостаточно Coins</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <i class="fas fa-sad-tear fa-4x mb-3" style="color: #f44336;"></i>
+                    <p>На данный момент у вас не хватает баланса для покупки. Продолжайте учиться и в скором времени вернитесь к покупке.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Понял</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+<!-- Bootstrap 5 JS va FontAwesome ikonkalari uchun quyidagilarni qo'shing -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>

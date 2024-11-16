@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% for student in students %}
+{% endfor %}
+
+<style>
+    h2 {
+        color: #EB4034;
+        font-size: 1.55rem;
+        font-weight: bold; /* Sarlavhalarni qalin qilish */
+        text-align: center;
+    }
+    .card-title,
+    .price-text {
+        font-weight: bold;
+    }
+</style>
+
+<div class="container my-4">
+    <div class="text-center">
+        <h2 class="text-decoration-none h2_r d-flex align-items-center">
+            &#128339; История покупок
+        </h2>
+    </div>
+
+    <div class="row mt-5">
+        {% for h in shop_history reversed %}
+        <div class="col-md-3 mb-4"> <!-- Bu yerda col-md-3 ni ishlatyapmiz -->
+            <div class="card shadow-sm h-100 text-center w-75 mx-auto">
+                <img src="{{ h.product.image.url }}" alt="{{ h.product.name }}" class="card-img-top mx-auto mt-3"
+                     style="width: 100px;">
+                <div class="card-body">
+                    <span class="badge w-50" style="background-color: #f2fffc; color: #83bb65">Товар получен</span>
+                    <h5 class="card-title mt-2">{{ h.product.name }}</h5>
+                    <img src="{% static 'images/coin.svg' %}" width="20" height="20" alt="" class="d-inline">
+                    <p class="price-text text-danger d-inline fs-5">{{ h.product.price }}</p>
+                    <span class="text-muted d-inline">Coins</span>
+                    <p class="text-muted mt-2">
+                        {{ h.purchase_date|date:"d M Y | H:s" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% if forloop.counter|divisibleby:4 %} <!-- Har to'rtinchi mahsulotdan keyin qatorni tugatamiz -->
+    </div>
+    <div class="row mt-5">
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,489 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .profile-section {
+        margin-bottom: 30px; /* Profil bo'limi va carousel orasidagi joy */
+    }
+
+    .carousel-inner img {
+        border-radius: 15px; /* Carousel rasmlari uchun radius */
+    }
+
+    .card {
+        border-radius: 15px; /* Profil kartasi uchun radius */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bir oz soyali ko'rinish berish */
+    }
+
+    .main {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+
+    .carousel-section {
+        width: 700px; /* Carouselning o'lchovi */
+    }
+
+    h2 {
+        font-weight: bold; /* Sarlavhalarni qalin qilish */
+        text-align: center; /* Markazlashtirish */
+        color: rgb(20, 44, 66);
+    }
+
+    .profile-section, .carousel-section {
+        text-align: center; /* O'rtada joylashtirish */
+    }
+
+    .avatar-frame {
+        position: absolute;
+        width: 185px; /* Размер рамки, может быть скорректирован в зависимости от вашей рамки */
+        height: 185px;
+        right: 100px;
+        display: inline-block;
+    }
+
+    .avatar-img {
+        position: relative;
+        top: 25px; /* Отступы, чтобы аватар был правильно выровнен внутри рамки */
+        left: 7px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        margin-bottom: 50px;
+    }
+
+    .additional-img {
+        position: absolute;
+        display: inline-block;
+        width: 40px;
+        height: 30px;
+        top: 170px;
+        right: 175px;
+        /*border-radius: 50%;*/
+    }
+
+    .small-alert {
+        font-size: 0.8rem; /* Уменьшенный размер шрифта */
+        width: 250px; /* Ширина alert */
+        margin: 0 auto; /* Центрирование */
+        position: relative; /* Относительное положение для анимации */
+    }
+
+    .blog-container {
+        height: 500px;
+        overflow-y: scroll; /* Вертикальный скролл */
+        padding-top: 1060px !important;
+    }
+
+
+    .blog-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .card {
+        margin-left: 0; /* Chap tomonga kerakli marginni o'rnatish */
+    }
+
+    /* Add this CSS */
+    .friends-section {
+        position: absolute;
+        right: 50px;
+        top: 50px;
+        width: 200px;
+    }
+
+    .student_n {
+        text-decoration: none;
+        color: black;
+    }
+
+    .student_n:hover {
+        color: green
+    }
+
+    .heart:hover {
+        color: red
+    }
+
+    .heart {
+        color: gray;
+        transition: color 0.3s ease;
+    }
+
+    .comment:hover {
+        color: black;
+    }
+
+    .comment {
+        color: gray;
+        transition: color 0.3s ease;
+    }
+
+    .modal-content {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .modal-header, .modal-body {
+        padding: 15px;
+    }
+
+    .modal-title {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .com_inp {
+        -webkit-appearance: none;
+        background: #fff;
+        box-sizing: border-box;
+        color: #606266;
+        font-size: inherit;
+        height: 30px;
+        line-height: 30px;
+        outline: none;
+        padding: 1px 11px;
+        width: 270px;
+        border: 1px #dcdfe6;
+        border-radius: 4px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 0 0 1px #dcdfe6 inset;
+    }
+
+    .com_inp:focus {
+        border-color: red;
+        box-shadow: 0 0 0 1px red inset;
+    }
+
+    .com_inp::placeholder {
+        font-size: 15px;
+        color: gray;
+    }
+</style>
+
+<div class="container mt-1 text-center">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show small-alert" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+<div class="d-flex justify-content-between align-items-center gap-3 mt-3">
+    <h2 style="margin-top: 30px; margin-bottom: 20px; margin-left: 100px;"><img
+            src="{% static 'images/profile_logo.png' %}" alt="" width="30" height="30"> Профиль</h2>
+    <h2 style="margin-right: 90px; margin-top: 30px;"><img src="{% static 'images/blog_logo.png' %}" alt="" width="30"
+                                                           height="30"> Посты</h2>
+    <h2 style="margin-top: 30px; margin-right: 300px;"><img src="{% static 'images/profile_logo.png' %}" alt=""
+                                                            width="30" height="30"> Друзья</h2>
+</div>
+<main class="main d-flex justify-content-center align-items-start gap-5">
+    <div class="profile-section mb-5 text-center">
+        <div class="card" style="width: 400px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <div class="card-body">
+                {% for student in students %}
+                <img src="{{ student.avatar.url }}" alt="Profile Picture" class="avatar-img">
+                <img src="{% static 'images/ramka.svg' %}" class="avatar-frame">
+                <a href="{% url 'edit_profile' request.user.username %}">
+                    <img src="{% static 'images/img.png' %}" alt="Additional Image" class="additional-img">
+                </a>
+                <h5 class="card-title" style="margin-top: 50px;color: rgb(20, 44, 66); font-weight: 700;">
+                    {{ student.first_name }} {{ student.last_name }}</h5>
+                <p class="card-text">{{ student.liga }} | {{ student.group }} | {{ student.group.teacher.first_name }}
+                    {{ student.group.teacher.last_name }} | {{ student.group.lesson_time|date:"H:i" }}
+                </p>
+                <p class="card-text text-white fw-bold fs-2 py-3 px-3 rounded-3"
+                   style="background: linear-gradient(286.17deg, #e33d0e, #ff7d58);"><img
+                        src="{% static 'images/coin.svg' %}" alt="" width="40px" height="40px"> {{ student.coins }} <img
+                        src="{% static 'images/xp.svg' %}"
+                        alt="" width="50px" height="50px" class="ms-3"> {{ student.xp }}
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="container d-flex justify-content-center align-items-start flex-column blog-container"
+         style="width: 690px; margin-right: 20px;">
+        {% for blog in blogs reversed %}
+        {% if blog %}
+        <div class="card blog-card mb-5"
+             style="margin-left: 50px; {% if blog.author == request.user.student %}background-color: #e3f2fd;{% endif %}">
+            <div class="card-header d-flex align-items-center gap-2">
+                <img src="{{ blog.author.avatar.url }}" class="rounded-circle" alt="User avatar" width="50" height="50">
+                <div class="ml-3">
+                    <h5 style="{% if blog.author == request.user.student %}color: #007bff;{% endif %} font-weight: 700;">
+                        {{ blog.author.first_name }} {{ blog.author.last_name }}</h5>
+                    <small>{{ blog.created_at|date:"d.m.Y" }}</small>
+                </div>
+                <div>
+                    {% if blog.author == request.user.student %}
+                    <div class="ms-4">
+                        <a href="{% url 'delete_blog' blog.id %}" class="btn btn-sm">
+                            <i class="fa-solid fa-trash text-danger"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                {% if blog.image %}
+                <img src="{{ blog.image.url }}" class="img-fluid mb-3" alt="Post image" style="max-width: 100%;">
+                <p class="card-text">{{ blog.title }}</p>
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="d-flex gap-2">
+                            <div class="d-inline-flex align-items-center gap-1">
+                                <button class="btn p-0 heart ps-2" id="like-count-{{ blog.id }}"
+                                        onclick="showLikersModal({{ blog.id }})">{{ blog.likes.count }}
+                                </button>
+                                <a href="{% url 'like_post' blog.id %}"
+                                   id="like-icon-{{ blog.id }}"
+                                   onclick="toggleLike({{ blog.id }})"
+                                   class="fa-heart heart text-decoration-none btn p-0 {% if blog.user_liked %}fa-solid text-danger{% else %}fa-regular text-gray{% endif %}"></a>
+                            </div>
+
+
+                            <button id="show-comments-button-{{ blog.id }}" class="btn comment"
+                                    onclick="showCommentsModal({{ blog.id }})">
+                                {{ blog.comments.count }} <i class="fa-regular fa-comment"></i>
+                            </button>
+                            <div class="modal fade" id="likers-modal-{{ blog.id }}" tabindex="-1"
+                                 aria-labelledby="likersModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h3 style="font-weight: bold; text-align: center;color: rgb(20, 44, 66);"
+                                                class="modal-title" id="likersModalLabel">Likes</h3>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <ul id="likers-list-{{ blog.id }}">
+                                                {% for l in likes %}
+                                                {% if l.blog == blog %}
+                                                <li class="d-flex align-items-center gap-2">
+                                                    <img src="{{ l.liker.avatar.url }}" alt="Avatar"
+                                                         class="rounded-circle" width="30" height="30">
+                                                    {{ l.liker.first_name }} {{ l.liker.last_name }}
+                                                </li>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Kommentlar uchun Modal -->
+                <div class="modal fade" id="commentsModal-{{ blog.id }}" tabindex="-1"
+                     aria-labelledby="commentsModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="commentsModalLabel">Comments</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <ul class="list-group mb-3" id="comment-section-{{ blog.id }}">
+                                    {% for comment in comments reversed %}
+                                    {% if comment.post.id == blog.id %}
+                                    <li class="list-group-item {% if comment.is_own %}bg-light{% endif %}">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img src="{{ comment.commenter.avatar.url }}" alt="Profile Picture"
+                                                 class="rounded-circle" width="40" height="40">
+                                            <div class="d-flex justify-content-between w-100">
+                                                <div>
+                                    <span class="d-flex align-items-center gap-1">
+                                        <strong {% if comment.is_own %} style="color: #007bff;" {% endif %}>
+                                            {{ comment.commenter.first_name }} {{ comment.commenter.last_name }}
+                                        </strong>
+                                        <small class="text-muted ms-3">{{ comment.display_time }}</small>
+                                        {% if comment.is_own %}
+                                        <a href="{% url 'delete_comment' comment.id %}"
+                                           class="btn btn-link text-danger btn-sm">
+                                            <i class="fa-solid fa-trash" style="color: #ff0000;"></i>
+                                        </a>
+                                        {% endif %}
+                                    </span>
+                                                    <p class="mb-1">{{ comment.content }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% endif %}
+                                    {% empty %}
+                                    <li class="list-group-item">No comments yet.</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <form method="post" class="d-flex align-items-center"
+                          onsubmit="return validateComment({{ blog.id }})">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ blog.id }}" name="blog_id">
+                        <div class="inp_wrapper">
+                            <input type="text" id="comment-input-{{ blog.id }}" class="com_inp"
+                                   placeholder="Comment" name="comment"
+                                   oninput="checkCommentInput({{ blog.id }})"></input>
+                        </div>
+                        <button type="submit" id="send-button-{{ blog.id }}" class="btn btn-danger d-flex align-items-center ms-2" style="height: 30px;" disabled>Post
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <h1>no</h1>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="" style="width: 500px; margin-right: 40px; margin-top: 30px">
+        <ul class="list-group">
+            {% for student in group_students %}
+            <li class="list-group-item d-flex align-items-center gap-3 w-100 {% if student == request.user.student %}current-user{% endif %}">
+                <img src="{{ student.avatar.url }}" alt="Avatar" class="rounded-circle"
+                     style="border: solid;border-color: #515c66" width="40" height="40">
+                <div class="d-flex flex-column">
+                    <a href="{% url 'friend_page' student.id %}" class="student_n">{{ student.first_name }}
+                        {{ student.last_name }}</a>
+                    <small class="text-secondary" style="font-size: smaller;">{{ student.group.course }} |
+                        {{ student.group }}</small>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</main>
+
+<script>
+    const commentText = document.getElementById(`comment-input-${blogId}`).value;
+    console.log(commentText);  // matnni tekshirish
+
+
+function likePost(blogId) {
+    fetch(`/like/${blogId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        const likeButton = document.getElementById(`like-button-${blogId}`);
+        const likeIcon = document.getElementById(`like-icon-${blogId}`);
+        const likeCount = document.getElementById(`like-count-${blogId}`);
+
+        // Change the icon and button color based on whether the user liked or not
+        if (data.is_liked) {
+            likeIcon.classList.remove('fa-regular'); // Remove fa-regular
+            likeIcon.classList.add('fa-solid');      // Add fa-solid to make the heart filled
+            likeButton.classList.add('text-danger'); // Set the button color to red
+            likeButton.classList.remove('text-gray'); // Remove gray color
+        } else {
+            likeIcon.classList.add('fa-regular');   // Add fa-regular to make the heart outlined
+            likeIcon.classList.remove('fa-solid');  // Remove fa-solid
+            likeButton.classList.remove('text-danger'); // Remove red color
+            likeButton.classList.add('text-gray');   // Set the button color to gray
+        }
+
+        // Update the like count
+        likeCount.innerText = data.likes_count;
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+
+
+    function addComment(blogId) {
+        const commentText = document.getElementById(`comment-input-${blogId}`).value;
+        if (commentText.trim() === "") return;
+
+        fetch(`/add_comment/`, {  // Yangi URLni qo'llang
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 'content': commentText, 'blog_id': blogId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const commentSection = document.getElementById(`comment-section-${blogId}`);
+                const newComment = `
+                    <li class="list-group-item">
+                        <strong>${data.username}:</strong> ${data.comment}
+                    </li>`;
+                commentSection.innerHTML += newComment;
+                document.getElementById(`comment-input-${blogId}`).value = "";
+            } else {
+                console.error(data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+
+
+
+    function showComments(blogId) {
+        const commentSectionContainer = document.getElementById(`comment-section-container-${blogId}`);
+
+        // Toggle the display property between 'none' and 'block'
+        if (commentSectionContainer.style.display === 'none' || commentSectionContainer.style.display === '') {
+            commentSectionContainer.style.display = 'block'; // Show comments
+        } else {
+            commentSectionContainer.style.display = 'none'; // Hide comments
+        }
+    }
+
+
+    function checkCommentInput(blogId) {
+        const commentInput = document.getElementById(`comment-input-${blogId}`);
+        const sendButton = document.getElementById(`send-button-${blogId}`);
+
+        if (commentInput.value.trim() === "") {
+            sendButton.disabled = true;
+        } else {
+            sendButton.disabled = false;
+        }
+    }
+
+    function validateComment(blogId) {
+        const commentInput = document.getElementById(`comment-input-${blogId}`).value.trim();
+        if (!commentInput) {
+            return false; // Prevent form submission if comment is empty
+        }
+        return true; // Allow form submission if comment is not empty
+    }
+
+function showLikersModal(blogId) {
+    const modal = new bootstrap.Modal(document.getElementById(`likers-modal-${blogId}`));
+    modal.show();
+}
+
+function showCommentsModal(blogId) {
+    const modal = new bootstrap.Modal(document.getElementById(`commentsModal-${blogId}`));
+    modal.show();
+}
+
+</script>
+
+
+{% endblock %}

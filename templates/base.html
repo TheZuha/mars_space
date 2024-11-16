@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MARS SPACE</title>
+    <link rel="icon" href="{% static 'images/logo-icon.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Onest', sans-serif;
+            font-weight: 700;
+        }
+
+        header {
+            background-color: white;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 80px;
+        }
+
+
+        .navbar-nav .nav-link {
+            font-size: 16px;
+        }
+
+        .profile-link img {
+            border: 2px solid #ddd;
+        }
+
+        .btn-outline-danger {
+            color: #ff4d4d;
+            border-color: #ff4d4d;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #ff4d4d;
+            color: white;
+        }
+
+        .navbar-nav {
+            margin-right: 150px;
+            gap: 20px;
+        }
+
+        .menu_btn {
+            color: gray;
+            background-color: transparent;
+            border-radius: 0;
+            transition: color 0.3s ease
+        }
+
+        .menu_btn.active {
+            color: red !important; /* Active holatda rang qizil bo'ladi */
+            background-color: transparent;
+            border-bottom: 2px solid red; /* Tagiga qizil chiziq */
+            padding-bottom: 5px;
+        }
+
+        .menu_btn:hover {
+            color: red;
+        }
+
+        .avatar-framee {
+            position: relative;
+            width: 55px; /* Размер контейнера рамки */
+            height: 55px;
+            background-image: url('/static/images/ramka_s.svg'); /* Путь к вашей рамке */
+            background-size: cover;
+            display: inline-block;
+            border-radius: 50%;
+        }
+
+        .avatar-imgg {
+            position: absolute;
+            top: 11px; /* Отрегулируйте отступы */
+            left: 8px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .dropdown-menu {
+            left: 0; /* Dropdown ni chapdan boshlanishi */
+            right: auto; /* O'ngdan ko'chirmaslik uchun */
+        }
+
+    </style>
+</head>
+<body class="bg-body-secondary">
+<header class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container d-flex justify-between">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="{% static 'images/mars_logo.png' %}" alt="Mars Logo" class="w-25 h-25">
+        </a>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link btn menu_btn {% if request.path == '/' %}active{% endif %}" href="/"><i
+                        class="fa-solid fa-house"></i> Обучение</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link btn menu_btn {% if request.path == '/blog/' %}active{% endif %}" href="/blog/"><i
+                        class="fa-solid fa-blog"></i> Блог</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link btn menu_btn {% if request.path == '/space_shop/' %}active{% endif %}"
+                   href="/space_shop/"><i
+                        class="fa-solid fa-store"></i> Магазин</a>
+            </li>
+        </ul>
+
+        <div class="d-flex align-items-center">
+            <a href="{% url 'create_blog' %}" class="btn d-flex align-items-center justify-content-center"
+               style="font-weight: 900; height: 50px; width: 180px; font-size: 19px; border-radius: 10px;border: 1px solid #ef400f;color: #ef400f" >
+                + Создать пост
+            </a>
+
+            {% for student in students %}
+            <div class="dropdown ms-4 d-inline-block">
+                <a href="#" class="profile-link d-flex align-items-center dropdown-toggle"
+                   id="dropdownMenu{{ forloop.counter }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="avatar-framee">
+                        <img src="{{ student.avatar.url }}" class="rounded-circle avatar-imgg" alt="Profile" width="30"
+                             height="30">
+                    </div>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenu{{ forloop.counter }}"
+                    style="width: 180px;">
+                    <li>
+                        <a class="dropdown-item" style="color: #ff0000;" href="{% url 'logout' %}">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Выйти из аккаунта
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+
+            {% endfor %}
+
+        </div>
+    </div>
+</header>
+
+{% block content %}
+
+{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuItems = document.querySelectorAll('.menu_btn');
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', function () {
+                // Barcha tugmalardan active klassini olib tashlash
+                menuItems.forEach(btn => btn.classList.remove('active'));
+
+                // Bosilgan tugmaga active klassini qo'shish
+                this.classList.add('active');
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

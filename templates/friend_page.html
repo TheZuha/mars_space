@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .profile-section {
+        margin-bottom: 30px; /* Profil bo'limi va carousel orasidagi joy */
+    }
+
+    .carousel-inner img {
+        border-radius: 15px; /* Carousel rasmlari uchun radius */
+    }
+
+    .card {
+        border-radius: 15px; /* Profil kartasi uchun radius */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bir oz soyali ko'rinish berish */
+    }
+
+    .main {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+
+    .carousel-section {
+        width: 700px; /* Carouselning o'lchovi */
+    }
+
+    h2 {
+        font-weight: bold; /* Sarlavhalarni qalin qilish */
+        text-align: center; /* Markazlashtirish */
+        color: rgb(20, 44, 66);
+    }
+
+    .profile-section, .carousel-section {
+        text-align: center; /* O'rtada joylashtirish */
+    }
+
+    .avatar-frame {
+        position: absolute;
+        width: 185px; /* Размер рамки, может быть скорректирован в зависимости от вашей рамки */
+        height: 185px;
+        right: 100px;
+        display: inline-block;
+    }
+
+    .avatar-img {
+        position: relative;
+        top: 25px; /* Отступы, чтобы аватар был правильно выровнен внутри рамки */
+        left: 7px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        margin-bottom: 50px;
+    }
+
+    .additional-img {
+        position: absolute;
+        display: inline-block;
+        width: 40px;
+        height: 30px;
+        top: 170px;
+        right: 175px;
+        /*border-radius: 50%;*/
+    }
+
+    .small-alert {
+        font-size: 0.8rem; /* Уменьшенный размер шрифта */
+        width: 250px; /* Ширина alert */
+        margin: 0 auto; /* Центрирование */
+        position: relative; /* Относительное положение для анимации */
+    }
+
+    .blog-container {
+        height: 500px;
+        overflow-y: auto; /* Вертикальный скролл */
+        padding-top: 1050px;
+    }
+
+
+    .blog-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .card {
+        margin-left: 0; /* Chap tomonga kerakli marginni o'rnatish */
+    }
+
+    /* Add this CSS */
+    .friends-section {
+        position: absolute;
+        right: 50px;
+        top: 50px;
+        width: 200px;
+    }
+
+    .student_n {
+        text-decoration: none;
+        color: black;
+    }
+
+    .student_n:hover {
+        color: green
+    }
+</style>
+
+
+<div class="d-flex justify-content-between align-items-center gap-3 mt-3">
+    <h2 style="margin-top: 30px; margin-bottom: 20px; margin-left: 100px;">🧑‍🚀 Профиль</h2>
+    <h2 style="margin-right: 800px; margin-top: 30px;">🎉 Посты</h2>
+</div>
+
+
+<main class="main d-flex justify-content-center align-items-start">
+    <div class="profile-section mb-5 text-center">
+        <div class="card" style="width: 400px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <div class="card-body">
+                <img src="{{ student.avatar.url }}" alt="Profile Picture" class="avatar-img">
+                <img src="{% static 'images/ramka.svg' %}" class="avatar-frame">
+                <a href="{% url 'edit_profile' request.user.username %}">
+                    <img src="{% static 'images/img.png' %}" alt="Additional Image" class="additional-img">
+                </a>
+                <h5 class="card-title" style="margin-top: 50px;color: rgb(20, 44, 66); font-weight: 700;">
+                    {{ student.first_name }} {{ student.last_name }}</h5>
+                <p class="card-text">{{ student.liga }} | {{ student.group }} | {{ student.group.teacher.first_name }}
+                    {{ student.group.teacher.last_name }} | {{ student.group.lesson_time|date:"H:i" }}
+                </p>
+                <p class="card-text text-white fw-bold fs-2 py-3 px-3 rounded-3"
+                   style="background: linear-gradient(286.17deg, #e33d0e, #ff7d58);"><img
+                        src="{% static 'images/coin.svg' %}" alt="" width="40px" height="40px"> {{ student.coins }} <img
+                        src="{% static 'images/xp.svg' %}"
+                        alt="" width="50px" height="50px" class="ms-3"> {{ student.xp }}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="container d-flex justify-content-center align-items-start flex-column blog-container"
+         style="width: 400px; margin-right: 450px;">
+        {% for blog in blogs reversed %}
+        <div class="card blog-card mb-5"
+             style="margin-left: 50px; {% if blog.author == request.user.student %}background-color: #e3f2fd;{% endif %}">
+            <div class="card-header d-flex align-items-center gap-2">
+                <img src="{{ blog.author.avatar.url }}" class="rounded-circle" alt="User avatar" width="50" height="50">
+                <div class="ml-3">
+                    <h5 style="{% if blog.author == request.user.student %}color: #007bff;{% endif %}">
+                        {{ blog.author.first_name }} {{ blog.author.last_name }}</h5>
+                    <small>{{ blog.created_at|date:"d.m.Y" }}</small>
+                </div>
+                <div>
+                    {% if blog.author == request.user.student %}
+                    <div class="ms-4">
+                        <a href="{% url 'delete_blog' blog.id %}" class="btn btn-sm">
+                            <i class="fa-solid fa-trash text-danger"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ blog.title }}</p>
+                {% if blog.image %}
+                <img src="{{ blog.image.url }}" class="img-fluid mb-3" alt="Post image" style="max-width: 100%;">
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'like_post' blog.id %}" id="like-button-{{ blog.id }}"
+                               onclick="likePost({{ blog.id }})"
+                               class="btn {% if blog.user_liked %}text-danger{% else %}text-gray{% endif %}">
+                                <i id="like-icon-{{ blog.id }}"
+                                   class="fa-regular {% if blog.user_liked %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
+                                <span id="like-count-{{ blog.id }}">{{ blog.likes.count }}</span>
+                            </a>
+
+                            <button id="show-comments-button-{{ blog.id }}" class="btn"
+                                    onclick="showComments({{ blog.id }})">
+                                <i class="fa-regular fa-comment"></i>
+                                {{ blog.comments.count }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="comment-section-container-{{ blog.id }}" style="display: none;">
+                    <h6>Комментарии</h6>
+                    <ul class="list-group mb-3" id="comment-section-{{ blog.id }}" style="width: 320px">
+                        {% for comment in comments %}
+                        {% if comment.post.id == blog.id %}
+                        <li class="list-group-item {% if comment.is_own %}bg-light{% endif %}">
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="{{ comment.commenter.avatar.url }}" alt="Profile Picture"
+                                     class="rounded-circle" width="40" height="40">
+                                <div class="d-flex justify-content-between w-100">
+                                    <div>
+                                        <span class="d-flex align-items-center gap-1">
+                                            <strong {% if comment.is_own %} style="color: #007bff;" {% endif %}>
+                                                {{ comment.commenter.first_name }} {{ comment.commenter.last_name }}
+                                            </strong>
+                                            <small class="text-muted ms-3">{{ comment.display_time }}</small>
+                                            {% if comment.is_own %}
+                                            <a href="{% url 'delete_comment' comment.id %}"
+                                               class="btn btn-link text-danger btn-sm">
+                                                <i class="fa-solid fa-trash" style="color: #ff0000;"></i>
+                                            </a>
+                                            {% endif %}
+                                        </span>
+                                        <p class="mb-1">{{ comment.content }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% empty %}
+                        <li class="list-group-item">No comments yet.</li>
+                        {% endfor %}
+                    </ul>
+
+                    <form method="post" onsubmit="return validateComment({{ blog.id }})">
+                        {% csrf_token %}
+                        <input type="text" hidden value="{{ blog.id }}" name="blog_id">
+                        <textarea id="comment-input-{{ blog.id }}" class="form-control" rows="2"
+                                  placeholder="Write a comment..." name="comment"
+                                  oninput="checkCommentInput({{ blog.id }})"></textarea>
+                        <button type="submit" id="send-button-{{ blog.id }}" class="btn btn-danger mt-2" disabled>Send
+                        </button>
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</main>
+
+{% endblock %}
