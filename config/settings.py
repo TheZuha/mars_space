@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%q+3!jh++e#@1@h55ril8=g(@!yroa&yg!dd*=szmjbdtfk@#1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['space-marsit.onrender.com', '127.0.0.1', 'localhost']
 
 # Application definition
 
