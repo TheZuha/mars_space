@@ -8,7 +8,7 @@ services:
       - key: DJANGO_SETTINGS_MODULE
         value: project_name.settings
       - key: SECRET_KEY
-        value: 
+        value: 'django-insecure-%q+3!jh++e#@1@h55ril8=g(@!yroa&yg!dd*=szmjbdtfk@#1'
       - key: DEBUG
         value: 'False'
     staticPublish:
