@@ -3,10 +3,10 @@ services:
     name: django-app
     env: python
     buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate"
-    startCommand: "gunicorn project_name.wsgi:application"
+    startCommand: "gunicorn config.wsgi:application"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
-        value: project_name.settings
+        value: config.settings
       - key: SECRET_KEY
         value: 'django-insecure-%q+3!jh++e#@1@h55ril8=g(@!yroa&yg!dd*=szmjbdtfk@#1'
       - key: DEBUG
