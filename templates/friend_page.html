@@ -117,9 +117,6 @@
             <div class="card-body">
                 <img src="{{ student.avatar.url }}" alt="Profile Picture" class="avatar-img">
                 <img src="{% static 'images/ramka.svg' %}" class="avatar-frame">
-                <a href="{% url 'edit_profile' request.user.username %}">
-                    <img src="{% static 'images/img.png' %}" alt="Additional Image" class="additional-img">
-                </a>
                 <h5 class="card-title" style="margin-top: 50px;color: rgb(20, 44, 66); font-weight: 700;">
                     {{ student.first_name }} {{ student.last_name }}</h5>
                 <p class="card-text">{{ student.liga }} | {{ student.group }} | {{ student.group.teacher.first_name }}
